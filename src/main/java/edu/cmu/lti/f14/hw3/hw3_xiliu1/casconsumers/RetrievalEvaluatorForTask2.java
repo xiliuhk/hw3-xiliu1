@@ -27,7 +27,7 @@ import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.Utils;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.RankedDoc;
 
 
-public class RetrievalEvaluator extends CasConsumer_ImplBase {
+public class RetrievalEvaluatorForTask2 extends CasConsumer_ImplBase {
 
 	/** query id number **/
 	public ArrayList<Integer> qIdList;
