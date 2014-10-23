@@ -16,7 +16,7 @@ import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.OpenNLPTokenization;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.StanfordLemmatizer;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.StopWordRemover;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.Utils;
-
+import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.SimilarityCalculator;
 
 
 public class DocumentVectorAnnotatorForTask2 extends JCasAnnotator_ImplBase {
@@ -70,35 +70,32 @@ public class DocumentVectorAnnotatorForTask2 extends JCasAnnotator_ImplBase {
 	    //TO DO: use tokenize0 from above 
 		String docText = doc.getText();
 		
+		
 		/*
+		//Baseline: Tokenize the sentence
+		List<String> tokens = this.tokenize0(docText);
+				
 		// Experiment 1. Remove stop-words and punctuation
 		StopWordRemover stopWordRemover = StopWordRemover.getInstance();
 		String stopRemovedText = stopWordRemover.removeStopWords(docText);
-		List<String> tokens = this.tokenize0(stopRemovedText);
+		//List<String> tokens = this.tokenize0(stopRemovedText);
 		*/
-		
-		/* Experiment 2. Remove punctuations and convert to lowercases
+		/*
+		 //Experiment 2. Remove punctuations and convert to lowercases
 		docText.replaceAll("\\p{Punct}+", "").toLowerCase();
 		List<String> tokens = this.tokenize0(docText);
-		*/
-		
-		/*
+		*/	
+		/**/
 		//Experiment 3. StanfordLemmatizer
 		String stemmedText = StanfordLemmatizer.stemText(docText);
-		List<String> tokens = this.tokenize0(stemmedText);
-		 */
-		
-		/*
+			//List<String> tokens = this.tokenize0(stemmedText);
+
 		//Experiment 4. OpenNLPtokenizer
 		OpenNLPTokenization OpenNLPtokenizer= OpenNLPTokenization.getInstance();
-		//List<String> tokens = OpenNLPtokenizer.tokenize(stemmedText);
+		List<String> tokens = OpenNLPtokenizer.tokenize(stemmedText);
 		//List<String> tokens = OpenNLPtokenizer.tokenize(docText);
 		//List<String> tokens = OpenNLPtokenizer.tokenize(stopRemovedText);
-		*/		
 		
-		
-		//Tokenize the sentence
-		List<String> tokens = this.tokenize0(docText);
 		//hash the counts by token text
 		HashMap<String, Integer> tokenMap = new HashMap<String, Integer>();
 		for (String token: tokens){

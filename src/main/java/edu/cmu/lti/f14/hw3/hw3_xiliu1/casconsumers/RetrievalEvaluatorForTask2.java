@@ -23,6 +23,7 @@ import org.apache.uima.util.ProcessTrace;
 
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.typesystems.Document;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.typesystems.Token;
+import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.SimilarityCalculator;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.Utils;
 import edu.cmu.lti.f14.hw3.hw3_xiliu1.utils.RankedDoc;
 
@@ -40,7 +41,8 @@ public class RetrievalEvaluatorForTask2 extends CasConsumer_ImplBase {
 	private HashMap<Integer, ArrayList<RankedDoc>> documentMap;
 	
 	private BufferedWriter reportWriter;
-		
+	
+	private SimilarityCalculator similarityCal = SimilarityCalculator.getInstance();
 	public void initialize() throws ResourceInitializationException {
 
 		qIdList = new ArrayList<Integer>();
@@ -142,7 +144,15 @@ public class RetrievalEvaluatorForTask2 extends CasConsumer_ImplBase {
 			// TODO :: compute the cosine similarity measure
 			for (RankedDoc curDoc : docList){
 				HashMap<String, Integer> curTokenList = curDoc.getTokenList();
-				double curConsine = computeCosineSimilarity(queryVector, curTokenList);
+				//double curConsine = similarityCal.computeCosineSimilarity(queryVector, curTokenList);
+				
+				// Experiment 5. compute jaccard similarity
+				double curConsine = similarityCal.computeJaccardSimilarity(queryVector, curTokenList);
+				/*	*/
+				/*
+				//Experiment 6. compute dice similarity
+				double curConsine = similarityCal.computeDiceSimilarity(queryVector, curTokenList);
+				*/
 				curDoc.setScore(curConsine);
 			}
 			// TODO :: compute the rank of retrieved sentences
@@ -203,7 +213,68 @@ public class RetrievalEvaluatorForTask2 extends CasConsumer_ImplBase {
 		cosine_similarity =  numer / (Math.sqrt(a_square)*Math.sqrt(b_square));
 		return cosine_similarity;
 	}
-
+	/**
+	 * 
+	 * @return jaccard_similarity
+	 */
+	private double computeJaccardSimilarity(Map<String, Integer> queryVector,
+			Map<String, Integer> docVector) {
+		
+		// TODO :: compute cosine similarity between two sentences
+		double jaccard_similarity=0.0;
+		int inter_count = 0;
+		int union_count = 0;
+		
+		Iterator<String> keyIter = queryVector.keySet().iterator();
+		keyIter = queryVector.keySet().iterator();
+		while (keyIter.hasNext()){
+			String token = keyIter.next();
+			if (docVector.containsKey(token)){
+				inter_count += Math.min(docVector.get(token),queryVector.get(token) );
+				union_count += Math.max(docVector.get(token),queryVector.get(token) );
+			}else{
+				union_count += queryVector.get(token);
+			}
+		}
+		keyIter = docVector.keySet().iterator();
+		while (keyIter.hasNext()){
+			String token = keyIter.next();
+			if (!docVector.containsKey(token)){
+				union_count += docVector.get(token);
+			}
+		}
+		jaccard_similarity =  (double) inter_count/ (double) union_count;
+		return jaccard_similarity;
+	}
+	/**
+	 * 
+	 * @return dice_similarity
+	 */
+	private double computeDiceSimilarity(Map<String, Integer> queryVector,
+			Map<String, Integer> docVector) {
+		
+		// TODO :: compute cosine similarity between two sentences
+		double dice_similarity=0.0;
+		int inter_count = 0;
+		int a_count = 0;
+		int b_count = 0;
+		Iterator<String> keyIter = queryVector.keySet().iterator();
+		keyIter = queryVector.keySet().iterator();
+		while (keyIter.hasNext()){
+			String token = keyIter.next();
+			if (docVector.containsKey(token)){
+				inter_count += Math.min(docVector.get(token),queryVector.get(token) );
+			}
+			a_count += queryVector.get(token);
+		}
+		keyIter = docVector.keySet().iterator();
+		while (keyIter.hasNext()){
+			String token = keyIter.next();
+			b_count += docVector.get(token);
+		}
+		dice_similarity =  (double) 2*inter_count/(double) (a_count+b_count);
+		return dice_similarity;
+	}
 	/**
 	 * 
 	 * @return mrr
