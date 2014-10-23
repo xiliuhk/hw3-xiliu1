@@ -28,5 +28,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="src/main/resources/doc/hw3-xiliu1-report.docx"/>
+	<classpathentry kind="lib" path="src/main/resources/doc/hw3-xiliu1-report.pdf"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
